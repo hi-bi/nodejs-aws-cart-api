@@ -4,6 +4,8 @@ import { v4 } from 'uuid';
 
 import { Cart } from '../models';
 
+import { CartStatuses } from '../models';
+
 @Injectable()
 export class CartService {
   private userCarts: Record<string, Cart> = {};
@@ -17,6 +19,11 @@ export class CartService {
     const userCart = {
       id,
       items: [],
+
+      created_at: '',
+      status: CartStatuses.OPEN,
+      updated_at: '',
+      user_id: '',
     };
 
     this.userCarts[ userId ] = userCart;
