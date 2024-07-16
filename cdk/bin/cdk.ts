@@ -2,9 +2,14 @@
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
 import { CdkStack } from '../lib/cdk-stack';
+import path = require('path');
 
+export type Stage = "development" | "production";
 const app = new cdk.App();
-new CdkStack(app, 'CdkStack', {
+
+const stage = (process.env.STAGE || "development") as Stage;
+
+new CdkStack(app, `cart-service-stack-${stage}`, {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
@@ -18,4 +23,11 @@ new CdkStack(app, 'CdkStack', {
   // env: { account: '123456789012', region: 'us-east-1' },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
+  lambdaPath: path.resolve(__dirname, "..", "cart-service.zip"),
+  lambdaHandler: 'dist/lambda.handler',
+  stage,
+  stackName: `cart-service-stack-${stage}`,
+  description: 'Cart Service Stack'
 });
+
+app.synth();
