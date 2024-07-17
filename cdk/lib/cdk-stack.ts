@@ -10,21 +10,18 @@ import { Stage } from '../bin/cdk';
 
 export interface cartServiceStackProps extends cdk.StackProps {
   stage: Stage,
-  lambdaPath: string,
-  lambdaHandler: string,
-
 }
 
 export class CdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: cartServiceStackProps) {
     super(scope, id, props);
     
-    const {stage, stackName, lambdaHandler, lambdaPath} = props;
+    const {stage, stackName} = props;
 
     const cartServiceLambda = new lambda.Function(this, `cart-service-handler-${stage}`, {
       runtime: lambda.Runtime.NODEJS_20_X, // Choose any supported Node.js runtime
-      code: lambda.Code.fromAsset(lambdaPath), // Points to the lambda directory
-      handler: lambdaHandler, // Points to the 'cartServiceLambda' file in the asset directory
+      code: lambda.Code.fromAsset('../dist'), // Points to the lambda directory
+      handler: 'main.handler', // Points to the 'cartServiceLambda' file in the asset directory
       logRetention: RetentionDays.FIVE_DAYS,
       description: 'Cart Service lambda deploying',
       memorySize: 256,
@@ -57,7 +54,7 @@ export class CdkStack extends cdk.Stack {
     });
 
 
-    new CfnOutput(scope, `cartServiceLambdaOtput`,
+    new CfnOutput(this, `cartServiceLambdaOtput`,
       {
           value: cartServiceLambda.functionArn,
       }

@@ -1,4 +1,7 @@
-module.exports = function (options, webpack) {
+const webpack = require('webpack');
+
+module.exports = function (options) {
+    const { plugins, ...config } = options;
     return {
       ...options,
       entry: ['./src/lambda.ts'],
@@ -8,13 +11,27 @@ module.exports = function (options, webpack) {
         libraryTarget: 'commonjs2',
       },
       plugins: [
-        ...options.plugins,
-        new webpack.IgnorePlugin({
-          checkResource(resource) {
-            // Ignoring non-essential modules for Lambda deployment
-            return lazyImports.includes(resource);
-          },
-        }),
-      ],
+      ...plugins,
+      new webpack.IgnorePlugin({
+        checkResource(resource) {
+          const lazyImports = [
+            '@nestjs/microservices',
+            '@nestjs/websockets/socket-module',
+            '@nestjs/microservices/microservices-module',
+          ];
+          if (!lazyImports.includes(resource)) {
+            return false;
+          }
+          try {
+            require.resolve(resource, {
+              paths: [process.cwd()],
+            });
+          } catch (err) {
+            return true;
+          }
+          return false;
+        },
+      }),
+    ],
     };
 };

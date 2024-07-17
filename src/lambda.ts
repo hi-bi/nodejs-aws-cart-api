@@ -8,7 +8,6 @@ import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { ExpressAdapter } from "@nestjs/platform-express";
 import { eventContext } from "aws-serverless-express/middleware";
-import { ValidationPipe } from "@nestjs/common";
 
 
 const verbose = debug("api:verbose: handler");
@@ -25,14 +24,8 @@ async function bootstrapServer(context: Context) {
                 : ["log", "error", "warn", "debug", "verbose"],
 
         });
-        //app.setGlobalPrefix("");
         app.use(eventContext());
         app.use(helmet());
-        app.useGlobalPipes(
-            new ValidationPipe({
-                transform: true,
-            })
-        );
 
         await app.init();
 

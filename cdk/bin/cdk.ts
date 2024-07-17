@@ -23,8 +23,6 @@ new CdkStack(app, `cart-service-stack-${stage}`, {
   // env: { account: '123456789012', region: 'us-east-1' },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-  lambdaPath: path.resolve(__dirname, "..", "cart-service.zip"),
-  lambdaHandler: 'dist/lambda.handler',
   stage,
   stackName: `cart-service-stack-${stage}`,
   description: 'Cart Service Stack'
