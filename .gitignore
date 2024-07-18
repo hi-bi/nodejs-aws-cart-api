@@ -4,6 +4,9 @@
 /cdk/dist
 /cdk/node_modules
 
+# env
+.env
+
 # Logs
 logs
 *.log

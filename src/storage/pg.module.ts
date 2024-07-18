@@ -5,7 +5,7 @@ import 'dotenv/config';
 import { Pool } from 'pg';
 
 const pgConfig = { 
-    host: process.env.PGHOST,
+    host: process.env.PGHOST!,
     port: Number(process.env.PGPORT),
     database: process.env.PGDATABASE,
     user: process.env.PGUSER,
@@ -42,20 +42,27 @@ const pgConfig = {
 
   }
 
+  //console.log('pgConfig: ', pgConfig);
+  
   const dbPool = {
     provide: 'PG_POOL',
     useValue: new Pool(
         pgConfig
       ),
   }
+  
+  //console.log('dbPool: ', dbPool);
+  
 
 @Module({
   providers: [
     dbPool,
     PgService
   ],
-  exports: [ PgService ],
+  exports: [ PgService, dbPool ],
 })
+
+
 
 export class PgModule implements OnApplicationShutdown {
   
