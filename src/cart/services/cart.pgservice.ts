@@ -103,8 +103,34 @@ export class CartPgService {
     return { ...updatedCart };
   }
 */
-  removeByUserId(userId): void {
-    this.userCarts[ userId ] = null;
+  async removeByUserId(userId): Promise <void> {
+
+    const client = await this.db.pool.connect()
+ 
+    try {
+      await client.query('BEGIN');
+
+      let query = 'DELETE FROM cart.cart_items i \
+        USING cart.cart c \
+        WHERE c.user_id=$1 and (i.cart_id = c."uuid");';
+      let values = [userId];
+
+      let rows = await this.db.executeQuery(query,values);
+
+      query = 'DELETE FROM cart.cart \
+        WHERE user_id=$1;';
+      values = [userId];
+
+      rows = await this.db.executeQuery(query,values);
+
+      await client.query('COMMIT')
+    } catch (e) {
+      await client.query('ROLLBACK')
+      throw e
+    } finally {
+      client.release()
+    }
+  
   }
 
 }
