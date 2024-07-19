@@ -13,7 +13,6 @@ export class CartPgService {
 
   constructor (private db: PgService) {}
 
-  private userCarts: Record<string, Cart> = {};
 
   async findByUserId(userId: string): Promise< Cart | undefined > {
 
@@ -54,6 +53,7 @@ export class CartPgService {
     
   }
 
+
   async createByUserId(userId: string): Promise< Cart | undefined > {
    
     const id = v4();
@@ -88,21 +88,97 @@ export class CartPgService {
     return this.createByUserId(userId);
   }
 
-/*
-  updateByUserId(userId: string, { items }: Cart): Cart {
-    const { id, ...rest } = this.findOrCreateByUserId(userId);
 
-    const updatedCart = {
-      id,
-      ...rest,
-      items: [ ...items ],
+  async updateByUserId(userId: string, { items }: Cart): Promise < Cart | undefined > {
+
+    const query = 'SELECT "uuid" \
+      FROM cart.cart \
+      WHERE user_id = $1;';
+    const values = [userId];
+    const rows = await this.db.executeQuery(query,values);
+
+    if (rows.length > 0) {
+
+      const client = await this.db.pool.connect()
+
+      const uuid = rows[0]?.uuid;
+ 
+      try {
+  
+        await client.query('BEGIN');
+  
+        let query = 'DELETE FROM cart.cart_items \
+          WHERE cart_id=$1;';
+        let values = [uuid];
+  
+        let rows = await this.db.executeQuery(query,values);
+     
+        for (let i = 0; i < items.length; i++) {
+          const product_id = items[i].product.id;
+          const count = items[i].count
+
+          query = 'NSERT INTO cart.cart_items \
+            (cart_id, product_id, count) \
+            VALUES($1, $2, $3);';
+          values = [uuid, product_id, count];
+
+          rows = await this.db.executeQuery(query,values);
+  
+        }
+  
+        await client.query('COMMIT')
+  
+      } catch (e) {
+        await client.query('ROLLBACK')
+        throw e
+      } finally {
+        client.release()
+      }
+
+    } else {
+
+      const client = await this.db.pool.connect()
+
+      try {
+  
+        await client.query('BEGIN');
+
+        const uuid = v4();
+        const date = new Date().toISOString();
+        const status = CartStatuses.OPEN;
+    
+        let query = 'INSERT INTO cart.cart ("uuid", user_id, created_at, updated_at, status) VALUES($1, $2, $3, $3, $4);';
+        let values = [uuid, userId, date, status];
+    
+        let rows = await this.db.executeQuery(query,values);
+    
+        for (let i = 0; i < items.length; i++) {
+          const product_id = items[i].product.id;
+          const count = items[i].count
+
+          query = 'NSERT INTO cart.cart_items \
+            (cart_id, product_id, count) \
+            VALUES($1, $2, $3);';
+          values = [uuid, product_id, count];
+
+          rows = await this.db.executeQuery(query,values);
+        }
+  
+        await client.query('COMMIT')
+  
+      } catch (e) {
+        await client.query('ROLLBACK')
+        throw e
+      } finally {
+        client.release()
+      }
+
     }
 
-    this.userCarts[ userId ] = { ...updatedCart };
-
-    return { ...updatedCart };
+    return await this.findByUserId(userId);
   }
-*/
+
+
   async removeByUserId(userId): Promise <void> {
 
     const client = await this.db.pool.connect()
