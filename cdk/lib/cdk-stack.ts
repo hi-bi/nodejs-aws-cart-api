@@ -29,7 +29,11 @@ export class CdkStack extends cdk.Stack {
       currentVersionOptions: {},
       timeout: Duration.seconds(10),
       environment: {
-        hibi: process.env.hibi!,
+        PGHOST: process.env.PGHOST!,
+        PGPORT: process.env.PGPORT!,
+        PGDATABASE: process.env.PGDATABASE!,
+        PGUSER: process.env.PGUSER!,
+        PGPASSWORD: process.env.PGPASSWORD!,
       },
       initialPolicy: [
         new PolicyStatement({
