@@ -4,7 +4,7 @@ import { Pool } from 'pg';
 @Injectable()
 export class PgService {
 
-  constructor(@Inject('PG_POOL') private pool: Pool) {}
+  constructor(@Inject('PG_POOL') public pool: Pool) {}
 
   async executeQuery(queryText: string, values: any[] = []): Promise<any[]> {
     
