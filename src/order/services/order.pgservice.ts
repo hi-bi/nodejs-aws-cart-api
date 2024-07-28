@@ -4,8 +4,8 @@ import { v4 } from 'uuid';
 import { Order } from '../models';
 import { CartItem, CartStatuses, Product } from 'src/cart';
 
-
 import { PgService } from 'src/storage/pg.service';
+
 
 @Injectable()
 export class OrderPgService {
