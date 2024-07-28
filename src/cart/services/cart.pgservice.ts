@@ -13,8 +13,11 @@ export class CartPgService {
 
   constructor (private db: PgService) {}
 
-
   async findByUserId(userId: string): Promise< Cart | undefined > {
+
+    if (!userId) {
+      return
+    }
 
     const query = 'SELECT c."uuid" , c.user_id, c.created_at, c.updated_at, c.status, i.product_id, i.count \
       FROM cart.cart c \
@@ -36,7 +39,9 @@ export class CartPgService {
         }
         const count = rows[0]?.count;
 
-        cartItems.push({product, count})
+        if (product.id) {
+          cartItems.push({product, count})
+        }
       }
   
       return {
@@ -65,13 +70,10 @@ export class CartPgService {
 
     const rows = await this.db.executeQuery(query,values);
 
-    if (rows.length > 0) {
-      return await this.findByUserId(userId)
-    } else{
-      return
-    }
+    return await this.findByUserId(userId)
   }
 
+  
   async findOrCreateByUserId(userId: string): Promise< Cart >{
       
     console.log('userId: ', userId);
@@ -90,6 +92,10 @@ export class CartPgService {
 
 
   async updateByUserId(userId: string, { items }: Cart): Promise < Cart | undefined > {
+
+    if (!userId) {
+      return
+    }
 
     const query = 'SELECT "uuid" \
       FROM cart.cart \
@@ -180,6 +186,10 @@ export class CartPgService {
 
 
   async removeByUserId(userId): Promise <void> {
+
+    if (!userId) {
+      return
+    }
 
     const client = await this.db.pool.connect()
  

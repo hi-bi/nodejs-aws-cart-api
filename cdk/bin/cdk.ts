@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { CdkStack } from '../lib/cdk-stack';
-import path = require('path');
+import { CartServiceStack } from '../lib/CartServiceStack';
+import { NetStack } from '../lib/DbNetStack';
+import { stage } from '../lib/CartServiceStackProps';
+import 'dotenv/config';
 
-export type Stage = "development" | "production";
+
 const app = new cdk.App();
 
-const stage = (process.env.STAGE || "development") as Stage;
+const pgRdsStack = new NetStack(app, 'CartDbNetStack', {
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
+  description: 'Car DB communication stack',
+});
 
-new CdkStack(app, `cart-service-stack-${stage}`, {
+
+new CartServiceStack(app, 'CartServiceStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
@@ -21,11 +27,15 @@ new CdkStack(app, `cart-service-stack-${stage}`, {
   /* Uncomment the next line if you know exactly what Account and Region you
    * want to deploy the stack to. */
   // env: { account: '123456789012', region: 'us-east-1' },
+  env: { account: process.env.CDK_DEFAULT_ACCOUNT, region: process.env.CDK_DEFAULT_REGION },
 
   /* For more information, see https://docs.aws.amazon.com/cdk/latest/guide/environments.html */
-  stage,
-  stackName: `cart-service-stack-${stage}`,
-  description: 'Cart Service Stack'
+  stage: stage,
+  description: 'Cart Service stack',
+  vpc: pgRdsStack.dbNetProps.vpc,
+  vpcSubnets: pgRdsStack.dbNetProps.vpcSubnets(),
+  dbSecurityGroup: pgRdsStack.dbNetProps.dbPrivateSecurityGroup,
 });
+
 
 app.synth();

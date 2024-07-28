@@ -51,7 +51,7 @@ const pgConfig = {
       ),
   }
   
-  //console.log('dbPool: ', dbPool);
+  console.log('db pool connections created: ', dbPool);
   
 
 @Module({
