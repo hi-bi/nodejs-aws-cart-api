@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
 
-import { UsersService } from './services';
+import { UsersPgService } from './services';
+import { PgModule } from 'src/storage/pg.module';
 
 @Module({
-  providers: [ UsersService ],
-  exports: [ UsersService ],
+  imports: [ PgModule ],
+  providers: [ UsersPgService ],
+  exports: [ UsersPgService ],
 })
 export class UsersModule {}
