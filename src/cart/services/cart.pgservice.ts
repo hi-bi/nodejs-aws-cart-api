@@ -77,9 +77,9 @@ export class CartPgService {
   async findOrCreateByUserId(userId: string): Promise< Cart >{
       
     console.log('userId: ', userId);
-    if (!userId) {
-        userId='c5aaafe7-bdfa-4fcb-8871-ec10b42135b3';
-    }
+    //if (!userId) {
+    //    userId='c5aaafe7-bdfa-4fcb-8871-ec10b42135b3';
+    //}
       
     const userCart = await this.findByUserId(userId);
 
