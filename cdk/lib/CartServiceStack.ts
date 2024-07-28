@@ -79,7 +79,7 @@ import 'dotenv/config';
           restApiName: 'CartServiceLambdaAPIGateway',
           proxy: true,
           //binaryMediaTypes: ["*/*"],
-          deploy: false,
+          //deploy: false,
           //deployOptions: {
           //  stageName: props?.stage,
           //}
