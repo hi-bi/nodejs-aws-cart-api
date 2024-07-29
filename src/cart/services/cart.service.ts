@@ -23,7 +23,7 @@ export class CartService {
       created_at: '',
       status: CartStatuses.OPEN,
       updated_at: '',
-      user_id: '',
+      user_id: userId,
     };
 
     this.userCarts[ userId ] = userCart;
