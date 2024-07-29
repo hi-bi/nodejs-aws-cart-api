@@ -18,7 +18,7 @@ export class UsersPgService {
         }
 
         const query = 'SELECT id , name, password, email \
-        FROM users \
+        FROM cart.users \
         WHERE name = $1;';
         const values = [userId];
         const rows = await this.db.executeQuery(query,values);
