@@ -123,7 +123,7 @@ export class CartPgService {
           const product_id = items[i].product.id;
           const count = items[i].count
 
-          query = 'NSERT INTO cart.cart_items \
+          query = 'INSERT INTO cart.cart_items \
             (cart_id, product_id, count) \
             VALUES($1, $2, $3);';
           values = [uuid, product_id, count];
@@ -201,13 +201,13 @@ export class CartPgService {
         WHERE c.user_id=$1 and (i.cart_id = c."uuid");';
       let values = [userId];
 
-      let rows = await this.db.executeQuery(query,values);
+      let rows = await client.query(query,values);
 
       query = 'DELETE FROM cart.cart \
         WHERE user_id=$1;';
       values = [userId];
 
-      rows = await this.db.executeQuery(query,values);
+      rows = await client.query(query,values);
 
       await client.query('COMMIT')
     } catch (e) {
