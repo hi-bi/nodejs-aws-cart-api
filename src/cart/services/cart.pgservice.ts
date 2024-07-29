@@ -117,7 +117,7 @@ export class CartPgService {
           WHERE cart_id=$1;';
         let values = [uuid];
   
-        let rows = await this.db.executeQuery(query,values);
+        let rows = await client.query(query,values);
      
         for (let i = 0; i < items.length; i++) {
           const product_id = items[i].product.id;
@@ -128,7 +128,7 @@ export class CartPgService {
             VALUES($1, $2, $3);';
           values = [uuid, product_id, count];
 
-          rows = await this.db.executeQuery(query,values);
+          rows = await client.query(query,values);
   
         }
   
@@ -156,7 +156,7 @@ export class CartPgService {
         let query = 'INSERT INTO cart.cart ("uuid", user_id, created_at, updated_at, status) VALUES($1, $2, $3, $3, $4);';
         let values = [uuid, userId, date, status];
     
-        let rows = await this.db.executeQuery(query,values);
+        let rows = await client.query(query,values);
     
         for (let i = 0; i < items.length; i++) {
           const product_id = items[i].product.id;
@@ -167,7 +167,7 @@ export class CartPgService {
             VALUES($1, $2, $3);';
           values = [uuid, product_id, count];
 
-          rows = await this.db.executeQuery(query,values);
+          rows = await client.query(query,values);
         }
   
         await client.query('COMMIT')
